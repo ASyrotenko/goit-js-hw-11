@@ -2,6 +2,8 @@ export default class SearchApiService {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
+    this.perPage = 40;
+    this.loadPages = 0;
   }
 
   fetchArticles() {
@@ -11,22 +13,29 @@ export default class SearchApiService {
     };
 
     return fetch(
-      `${options.URL}?key=${options.API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=200`
+      `${options.URL}?key=${options.API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=${this.perPage}`
     )
       .then(response => response.json())
-      .then(({ hits }) => {
+      .then(({ hits, totalHits }) => {
         this.incrementPage();
-        return hits;
+
+        const obj = {
+          hits,
+          totalHits,
+        };
+        return obj;
       })
       .catch(error => console.log(error.message));
   }
 
   incrementPage() {
     this.page += 1;
+    this.loadPages += this.perPage;
   }
 
   resetPage() {
     this.page = 1;
+    this.loadPages = 0;
   }
 
   get query() {

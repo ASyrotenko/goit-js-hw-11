@@ -18,7 +18,7 @@ function onSearch(e) {
   hideLoadMoreBtn();
   searchApiService.query = e.currentTarget.elements.searchQuery.value;
   searchApiService.resetPage();
-  searchApiService.fetchArticles().then(hits => {
+  searchApiService.fetchArticles().then(({ hits, totalHits }) => {
     clearMarkup();
     if (hits.length === 0) {
       return Notiflix.Notify.failure(
@@ -27,15 +27,27 @@ function onSearch(e) {
       );
     }
     renderSearchMarkup(hits);
+    Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`, {
+      clickToClose: true,
+    });
     showLoadMoreBtn();
   });
 }
 
 function onLoadMore() {
-  searchApiService.fetchArticles().then(renderSearchMarkup);
+  searchApiService.fetchArticles().then(({ hits, totalHits }) => {
+    if (searchApiService.loadPages > totalHits) {
+      hideLoadMoreBtn();
+      return Notiflix.Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+    renderSearchMarkup(hits);
+  });
 }
 
 function renderSearchMarkup(hits) {
+  console.log(hits);
   const markup = hits
     .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
       return `
