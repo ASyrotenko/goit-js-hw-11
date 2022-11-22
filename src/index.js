@@ -49,6 +49,7 @@ function onLoadMore() {
     }
     renderSearchMarkup(hits);
     gallery.refresh();
+    smoothScroll();
   });
 }
 
@@ -103,4 +104,15 @@ function showLoadMoreBtn() {
 
 function hideLoadMoreBtn() {
   refs.loadMoreBtn.classList.add('is-hidden');
+}
+
+function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
