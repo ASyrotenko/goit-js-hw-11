@@ -1,5 +1,9 @@
 import SearchApiService from './search-service.js';
 import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
+let gallery = new SimpleLightbox('.gallery a');
 
 const refs = {
   searchForm: document.querySelector('.search-form'),
@@ -27,6 +31,7 @@ function onSearch(e) {
       );
     }
     renderSearchMarkup(hits);
+    gallery.refresh();
     Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`, {
       clickToClose: true,
     });
@@ -43,16 +48,25 @@ function onLoadMore() {
       );
     }
     renderSearchMarkup(hits);
+    gallery.refresh();
   });
 }
 
 function renderSearchMarkup(hits) {
-  console.log(hits);
   const markup = hits
-    .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
-      return `
+    .map(
+      ({
+        webformatURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+        largeImageURL,
+      }) => {
+        return `
     <div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+  <a class='photo-card__link' href='${largeImageURL}'><img src="${webformatURL}" alt="${tags}" loading="lazy" /></a>
   <div class="info">
     <p class="info-item">
       <b>Likes</b>
@@ -72,7 +86,8 @@ function renderSearchMarkup(hits) {
     </p>
   </div>
 </div>`;
-    })
+      }
+    )
     .join('');
 
   refs.galleryContainer.insertAdjacentHTML('beforeend', markup);

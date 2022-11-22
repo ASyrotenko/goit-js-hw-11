@@ -2,7 +2,7 @@ export default class SearchApiService {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
-    this.perPage = 40;
+    this.perPage = 5;
     this.loadPages = 0;
   }
 
