@@ -29,7 +29,7 @@ window.addEventListener('scroll', () => {
 function showLoading() {
   refs.loading.classList.add('show');
   refs.body.style.paddingBottom = '100px';
-  setTimeout(onLoadMore, 5000);
+  onLoadMore();
 }
 
 function onSearch(e) {
@@ -59,6 +59,7 @@ function onLoadMore() {
   searchApiService.fetchArticles().then(({ hits, totalHits }) => {
     if (searchApiService.loadPages > totalHits) {
       // hideLoadMoreBtn();
+      refs.loading.classList.remove('show');
       return Notiflix.Notify.warning(
         "We're sorry, but you've reached the end of search results."
       );
