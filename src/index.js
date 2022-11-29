@@ -2,6 +2,8 @@ import SearchApiService from './search-service.js';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import axios from 'axios';
+const axios = require('axios');
 
 let gallery = new SimpleLightbox('.gallery a');
 
