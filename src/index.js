@@ -18,7 +18,7 @@ refs.searchForm.addEventListener('submit', onSearch);
 
 window.addEventListener('scroll', () => {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  console.log({ scrollTop, scrollHeight, clientHeight });
+  // console.log({ scrollTop, scrollHeight, clientHeight });
   if (clientHeight + scrollTop >= scrollHeight - 5) {
     showLoading();
   }
@@ -59,6 +59,8 @@ function onLoadMore() {
   try {
     searchApiService.fetchArticles().then(({ hits, totalHits }) => {
       if (searchApiService.loadPages > totalHits) {
+        renderSearchMarkup(hits);
+        gallery.refresh();
         refs.loading.classList.remove('show');
         return Notiflix.Notify.warning(
           "We're sorry, but you've reached the end of search results."
