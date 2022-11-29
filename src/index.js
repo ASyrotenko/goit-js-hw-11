@@ -7,7 +7,6 @@ let gallery = new SimpleLightbox('.gallery a');
 
 const refs = {
   searchForm: document.querySelector('.search-form'),
-  loadMoreBtn: document.querySelector('.load-more'),
   galleryContainer: document.querySelector('.gallery'),
   loading: document.querySelector('.loading'),
   body: document.querySelector('body'),
@@ -16,7 +15,6 @@ const refs = {
 const searchApiService = new SearchApiService();
 
 refs.searchForm.addEventListener('submit', onSearch);
-// refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
 window.addEventListener('scroll', () => {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
@@ -35,39 +33,44 @@ function showLoading() {
 function onSearch(e) {
   e.preventDefault();
 
-  hideLoadMoreBtn();
-  searchApiService.query = e.currentTarget.elements.searchQuery.value;
-  searchApiService.resetPage();
-  searchApiService.fetchArticles().then(({ hits, totalHits }) => {
-    clearMarkup();
-    if (hits.length === 0) {
-      return Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.',
-        { clickToClose: true }
-      );
-    }
-    renderSearchMarkup(hits);
-    gallery.refresh();
-    Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`, {
-      clickToClose: true,
+  try {
+    searchApiService.query = e.currentTarget.elements.searchQuery.value;
+    searchApiService.resetPage();
+    searchApiService.fetchArticles().then(({ hits, totalHits }) => {
+      clearMarkup();
+      if (hits.length === 0) {
+        return Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.',
+          { clickToClose: true }
+        );
+      }
+      renderSearchMarkup(hits);
+      gallery.refresh();
+      Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`, {
+        clickToClose: true,
+      });
     });
-    // showLoadMoreBtn();
-  });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function onLoadMore() {
-  searchApiService.fetchArticles().then(({ hits, totalHits }) => {
-    if (searchApiService.loadPages > totalHits) {
-      // hideLoadMoreBtn();
-      refs.loading.classList.remove('show');
-      return Notiflix.Notify.warning(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
-    renderSearchMarkup(hits);
-    gallery.refresh();
-    smoothScroll();
-  });
+  try {
+    searchApiService.fetchArticles().then(({ hits, totalHits }) => {
+      if (searchApiService.loadPages > totalHits) {
+        refs.loading.classList.remove('show');
+        return Notiflix.Notify.warning(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
+      renderSearchMarkup(hits);
+      gallery.refresh();
+      smoothScroll();
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function renderSearchMarkup(hits) {
@@ -114,14 +117,6 @@ function renderSearchMarkup(hits) {
 
 function clearMarkup() {
   refs.galleryContainer.innerHTML = '';
-}
-
-// function showLoadMoreBtn() {
-//   refs.loadMoreBtn.classList.remove('is-hidden');
-// }
-
-function hideLoadMoreBtn() {
-  refs.loadMoreBtn.classList.add('is-hidden');
 }
 
 function smoothScroll() {
